@@ -1,0 +1,165 @@
+﻿
+<style>
+    #map {
+        height: 400px;
+        width: 700px;
+    }
+</style>
+
+<br />
+
+<div class="row">
+    <div id="map"></div>
+    <script>
+        var map;
+        var markers = [];
+        var contentString='placeholder';
+        var infoWindow;
+
+        var user;
+        var rating;
+        var lat;
+        var long;
+
+
+
+        function initMap(){
+            map=new google.maps.Map(document.getElementById('map'),{
+                center: { lat:45.74782405166663 , lng: 21.208970709276187},//45.74782405166663, 21.208970709276187
+                zoom:8
+        });
+            infoWindow=new google.maps.InfoWindow({content: contentString});
+            map.addListener("click", (event) => {addMarker(event.latLng);});
+
+
+
+        }
+
+        function addInfoWindow(marker, message) {
+
+            var contentOfWindow='';
+
+            var infoWindow = new google.maps.InfoWindow({
+                //document.getElementById('form') // message
+                content: message
+            });
+
+            google.maps.event.addListener(marker, 'mouseover', function () {
+                infoWindow.open(map, marker);
+            });
+            google.maps.event.addListener(marker, 'click', function () {
+
+               //var smth = document.getElementById('form');
+               openForm();
+               infoWindow.setContent("User: " + user + '\n' + "Rating: "+rating + '\n' + "Coord: " + marker.getPosition().toString());
+               // contentString = document.getElementById('form');
+
+               // infoWindow.setContent(contentString);
+           //      document.forms["mapSubForm"]["name"].value = lat.toString() +  " " +
+          //  document.forms["mapSubForm"]["address"].value.toString();
+
+
+
+
+            });
+             google.maps.event.addListener(marker, 'mouseout', function () {
+                infoWindow.close();
+            });
+        }
+
+
+
+        function addMarker(position) {//make a new marker
+            const marker = new google.maps.Marker({position,map,});
+
+            markers.push(marker);
+
+           // contentString =  document.forms["mapSubForm"]["name"].value = lat.toString() +  " " +
+          //  document.forms["mapSubForm"]["address"].value.toString();
+          //  contentString = marker.getPosition().toString(); //add content
+
+          contentString = marker.getPosition().toString();
+
+            addInfoWindow(marker, contentString);//add to the current marker functions and data
+
+
+
+           /* marker['infowindow'] = new google.maps.InfoWindow({content:contentString
+
+            marker.addListener('mouseover', function(){this['infowindow'].open(map,this);});
+
+            marker.addListener('mouseout', function(){this['infowindow'].close(map,this);});
+
+            infoWindow = new google.maps.InfoWindow({ content: contentString });
+
+            infoWindow.setContent(contentString);
+
+            marker.addListener('mouseover', function() {  infoWindow.open(map,marker);} );
+
+            marker.addListener('mouseout', function() {infoWindow.close();});*/
+
+
+        }
+
+
+        function getDistance(source, destination) {
+            return google.maps.geometry.spherical.computeDistanceBetween(
+                new google.maps.LatLng(source.lat, source.lng),
+                new google.maps.LatLng(destination.lat, destination.lng)
+            );
+        }
+
+        function openForm() {
+            document.getElementById("form").style.display = "block";
+        }
+        function closeForm() {
+            document.getElementById("form").style.display = "none";
+        }
+        function updateValues()
+        {
+            user = document.forms["mapSubForm"]["user"].value.toString();
+            rating = document.forms["mapSubForm"]["rating"].value.toString();
+
+        }
+        function formShow(){
+      $('#map').click(function() {
+    $('#form').addClass('.formShow');
+      });
+  };
+
+
+    </script>
+    @*End of Map Section*@
+    <script async
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbHI68VOT3NH7bCKvxjtysi2U0fngweSU&callback=initMap">
+    </script>
+</div>
+
+
+@*#form{
+        display: none;
+    }
+    .formShow{
+        display: block;
+    }*@
+
+<div id="map" height="100%" onclick="formShow()"></div>
+<div id="form">
+    <form onSubmit="check();return false;" enctype="multipart/form-data" id="mapSubForm">
+        <h2>Add New Alert</h2>
+        <p>
+            <label for="user">Enter a user:</label>
+            <input type="text" name="user" id="user" value="">
+        </p>
+
+        <p>
+            <label for="rating">Enter a severity rating:</label>
+            <input type="text" name="rating" id="rating" value="">
+        </p>
+
+
+        <input type="hidden" name="lat" id="lat">
+        <input type="hidden" name="lng" id="lng">
+        <input type="button" name="submitMapBtn" value="All OK" onclick="updateValues(); closeForm();">
+    </form>
+</div>
